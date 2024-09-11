@@ -1,0 +1,137 @@
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, Alert, Picker, Platform } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+const AppointmentForm = () => {
+  const [nome, setNome] = useState('');
+  const [idade, setIdade] = useState('');
+  const [genero, setGenero] = useState('');
+  const [horario, setHorario] = useState(new Date());
+  const [showTimePicker, setShowTimePicker] = useState(false);
+
+  const onChangeTime = (event, selectedTime) => {
+    const currentTime = selectedTime || horario;
+    setShowTimePicker(Platform.OS === 'ios');
+    setHorario(currentTime);
+  };
+
+  const handleSubmit = () => {
+    if (!nome || !idade || !genero || !horario) {
+      Alert.alert('Erro', 'Todos os campos são obrigatórios!');
+      return;
+    }
+
+    Alert.alert(
+      'Formulário Enviado',
+      `Nome: ${nome}\nIdade: ${idade}\nGênero: ${genero}\nHorário: ${horario.toLocaleTimeString()}`,
+    );
+
+    setNome('');
+    setIdade('');
+    setGenero('');
+    setHorario(new Date());
+  };
+
+  const showTimepicker = () => {
+    setShowTimePicker(true);
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Agendamento de Consulta</Text>
+
+      <Text style={styles.label}>Nome:</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Digite seu nome"
+        value={nome}
+        onChangeText={setNome}
+      />
+
+      <Text style={styles.label}>Idade:</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Digite sua idade"
+        keyboardType="numeric"
+        value={idade}
+        onChangeText={setIdade}
+      />
+
+      <Text style={styles.label}>Gênero:</Text>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={genero}
+          style={styles.picker}
+          onValueChange={(itemValue) => setGenero(itemValue)}
+        >
+          <Picker.Item label="Selecione o gênero" value="" />
+          <Picker.Item label="Masculino" value="Masculino" />
+          <Picker.Item label="Feminino" value="Feminino" />
+          <Picker.Item label="Outro" value="Outro" />
+        </Picker>
+      </View>
+
+      <Text style={styles.label}>Horário de Presença:</Text>
+      <View style={styles.timePickerButton}>
+        <Button onPress={showTimepicker} title="Selecionar Horário" />
+      </View>
+      {showTimePicker && (
+        <DateTimePicker
+          value={horario}
+          mode="time"
+          display="default"
+          onChange={onChangeTime}
+        />
+      )}
+
+      <View style={styles.submitButton}>
+        <Button title="Agendar Consulta" onPress={handleSubmit} />
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f2f2f2',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  label: {
+    fontSize: 18,
+    marginBottom: 5,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 15,
+    backgroundColor: '#fff',
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    marginBottom: 15,
+    backgroundColor: '#fff',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+  },
+  timePickerButton: {
+    marginBottom: 15,
+  },
+  submitButton: {
+    marginTop: 20,
+  },
+});
+
+export default AppointmentForm;
